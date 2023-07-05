@@ -1,35 +1,53 @@
 package main.java.ieseuropa;
 
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 
 public class Ball {
 	
-	private int x = 0;
-	private int y = 0;
-	private int xa = 1;
-	private int ya = 1;
-	private Game3 game;
-	
-	public Ball(Game3 game) {
-		this.game = game;
+	private static final int DIAMETER = 30;
+	int x = 0;
+	int y = 0;
+	int xa = 1;
+	int ya = 1;
+	private Game4 game;
+
+	public Ball(Game4 game) {
+		this.game= game;
 	}
-	
+
 	void move() {
-		if(x + xa < 0)
+		boolean changeDirection = true;
+		if (x + xa < 0)
 			xa = 1;
-		if(x + xa > game.getWidth() - 30)
+		else if (x + xa > game.getWidth() - DIAMETER)
 			xa = -1;
-		if(y + ya < 0)
+		else if (y + ya < 0)
 			ya = 1;
-		if(y + ya > game.getHeight() - 30)
+		else if (y + ya > game.getHeight() - DIAMETER)
+			game.gameOver();
+		else if (collision()){
 			ya = -1;
+			y = game.racquet.getTopY() - DIAMETER;
+		} else 
+			changeDirection = false;
 		
+		if (changeDirection) 
+			Sound.BALL.play();
 		x = x + xa;
 		y = y + ya;
 	}
-	
+
+	private boolean collision() {
+		return game.racquet.getBounds().intersects(getBounds());
+	}
+
 	public void paint(Graphics2D g) {
-		g.fillOval(x, y, 30, 30);
+		g.fillOval(x, y, DIAMETER, DIAMETER);
+	}
+	
+	public Rectangle getBounds() {
+		return new Rectangle(x, y, DIAMETER, DIAMETER);
 	}
 
 }
